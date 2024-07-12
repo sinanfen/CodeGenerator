@@ -22,6 +22,9 @@ public class DtoCreator
                 break;
             }
 
+            Console.Write("Enter the Module shortname: ");
+            string moduleName = Console.ReadLine().ToUpper();
+
             Console.WriteLine("Enter the Entity properties (one per line, empty line to finish):");
             List<(string Type, string Name)> properties = new List<(string, string)>();
             while (true)
@@ -47,31 +50,32 @@ public class DtoCreator
 
             if (selectedOptions.Contains("Dto"))
             {
-                string dtoContent = GenerateDto(entityName, properties);
+                string dtoContent = GenerateDto(entityName, moduleName, properties);
                 File.WriteAllText(Path.Combine(path, $"{entityName}Dto.cs"), dtoContent);
             }
 
             if (selectedOptions.Contains("AddDto"))
             {
-                string addDtoContent = GenerateAddDto(entityName, properties);
+                string addDtoContent = GenerateAddDto(entityName, moduleName, properties);
                 File.WriteAllText(Path.Combine(path, $"{entityName}AddDto.cs"), addDtoContent);
             }
 
             if (selectedOptions.Contains("UpdateDto"))
             {
-                string updateDtoContent = GenerateUpdateDto(entityName, properties);
+                string updateDtoContent = GenerateUpdateDto(entityName, moduleName, properties);
                 File.WriteAllText(Path.Combine(path, $"{entityName}UpdateDto.cs"), updateDtoContent);
             }
 
             Console.WriteLine($"Files generated successfully in {path}");
-            Console.WriteLine("---------------------------------------------");       
+            Console.WriteLine("---------------------------------------------");
         }
     }
 
 
-    static string GenerateDto(string entityName, List<(string Type, string Name)> properties)
+    static string GenerateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}Dto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");
@@ -85,9 +89,10 @@ public class DtoCreator
         return sb.ToString();
     }
 
-    static string GenerateAddDto(string entityName, List<(string Type, string Name)> properties)
+    static string GenerateAddDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}AddDto");
         sb.AppendLine("{");
 
@@ -103,9 +108,10 @@ public class DtoCreator
         return sb.ToString();
     }
 
-    static string GenerateUpdateDto(string entityName, List<(string Type, string Name)> properties)
+    static string GenerateUpdateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}UpdateDto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");

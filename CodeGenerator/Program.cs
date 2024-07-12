@@ -1,32 +1,46 @@
 ﻿class Program
 {
+    /// <summary>
+    /// Generates Interface-Implementation and AutoMapper Profile classes (IEntityService, EntityService, EntityProfile) for business logic layer (BLL) based on provided entity.
+    /// Prompts the user to enter the entity and module name, then generates the selected interface & classes
+    /// and saves them to the "Generated" directory in the current environment.
+    /// </summary>
+    /// <param name="args">Command-line arguments (not used).</param>    
     static void Main(string[] args)
     {
-        Console.Write("Enter the Entity name: ");
-        string entityName = Console.ReadLine();
+        while (true)
+        {
+            Console.Write("Enter the Entity name: ");
+            string entityName = Console.ReadLine();
 
-        string interfaceContent = GenerateInterface(entityName);
-        string classContent = GenerateClass(entityName);
-        string mapperContent = GenerateMapper(entityName);
+            Console.Write("Enter the Module name: ");
+            string moduleName = Console.ReadLine().ToUpper();
 
-        string path = Path.Combine(Environment.CurrentDirectory, "Generated");
-        Directory.CreateDirectory(path);
+            string interfaceContent = GenerateInterface(entityName, moduleName);
+            string classContent = GenerateClass(entityName, moduleName);
+            string mapperContent = GenerateMapper(entityName, moduleName);
 
-        File.WriteAllText(Path.Combine(path, $"I{entityName}Service.cs"), interfaceContent);
-        File.WriteAllText(Path.Combine(path, $"{entityName}Service.cs"), classContent);
-        File.WriteAllText(Path.Combine(path, $"{entityName}Profile.cs"), mapperContent);
+            string path = Path.Combine(Environment.CurrentDirectory, "Generated");
+            Directory.CreateDirectory(path);
 
-        Console.WriteLine($"Files generated successfully in {path}");
+            File.WriteAllText(Path.Combine(path, $"I{entityName}Service.cs"), interfaceContent);
+            File.WriteAllText(Path.Combine(path, $"{entityName}Service.cs"), classContent);
+            File.WriteAllText(Path.Combine(path, $"{entityName}Profile.cs"), mapperContent);
+
+            Console.WriteLine($"Files generated successfully in {path}");
+            Console.WriteLine("---------------------------------------------");
+        }
+
     }
 
-    static string GenerateInterface(string entityName)
+    static string GenerateInterface(string entityName, string moduleName)
     {
         return $@"
-        using Microsoft.EntityFrameworkCore.Query;
-        using MODISO.DOMAIN.DTOs.CRM.{entityName}Dtos;
-        using MODISO.DOMAIN.Entities.CRM;
+        using Microsoft.EntityFrameworkCore.Query;     
         using NArchitecture.Core.Persistence.Paging;
         using System.Linq.Expressions;
+        
+        namespace MODISO.BLL.Abstract.{moduleName};
 
         public interface I{entityName}Service
         {{
@@ -55,16 +69,15 @@
         }}";
     }
 
-    static string GenerateClass(string entityName)
+    static string GenerateClass(string entityName, string moduleName)
     {
         return $@"
         using AutoMapper;
-        using Microsoft.EntityFrameworkCore.Query;
-        using MODISO.BLL.Repositories.CRM;
-        using MODISO.DOMAIN.DTOs.CRM.{entityName}Dtos;
-        using MODISO.DOMAIN.Entities.CRM;
+        using Microsoft.EntityFrameworkCore.Query;      
         using NArchitecture.Core.Persistence.Paging;
         using System.Linq.Expressions;
+
+        namespace MODISO.BLL.Concrete.{moduleName};
 
         public class {entityName}Service : I{entityName}Service
         {{
@@ -187,21 +200,21 @@
         }}";
     }
 
-    static string GenerateMapper(string entityName)
+    static string GenerateMapper(string entityName, string moduleName)
     {
         return $@"
-        using AutoMapper;
-        using MODISO.DOMAIN.DTOs.CRM.{entityName}Dtos;
-        using MODISO.DOMAIN.Entities.CRM;
+        using AutoMapper;    
         using NArchitecture.Core.Persistence.Paging;
+
+        namespace MODISO.BLL.AutoMapper.Profiles.{moduleName};
 
         public class {entityName}Profile : Profile
         {{
             public {entityName}Profile()
             {{
                 CreateMap<{entityName}, {entityName}Dto>().ReverseMap();
-                CreateMap<{entityName}, {entityName}AddDto>().ReverseMap();
-                CreateMap<{entityName}, {entityName}UpdateDto>().ReverseMap();
+                CreateMap<{entityName}AddDto, {entityName}>();
+                CreateMap<{entityName}UpdateDto, {entityName}>();
                 CreateMap<IPaginate<{entityName}>, Paginate<{entityName}Dto>>();
             }}
         }}";
