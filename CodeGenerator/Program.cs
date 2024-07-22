@@ -261,6 +261,7 @@
                 CreateMap<{entityName}, {entityName}Dto>().ReverseMap();
                 CreateMap<{entityName}AddDto, {entityName}>();
                 CreateMap<{entityName}UpdateDto, {entityName}>();
+                CreateMap<{entityName}Dto, {entityName}UpdateDto>();
                 CreateMap<IPaginate<{entityName}>, Paginate<{entityName}Dto>>();
             }}
         }}";
