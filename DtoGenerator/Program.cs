@@ -15,6 +15,13 @@ public class DtoCreator
     {
         while (true)
         {
+            // TODO NULL check
+            Console.Write("Enter the Project Path: ");
+            string path = Console.ReadLine();
+            if (path.EndsWith(".csproj"))
+                path = Path.GetDirectoryName(path);
+
+
             Console.Write("Enter the Entity name (or type 'exit' to quit): ");
             string entityName = Console.ReadLine();
             if (entityName.Equals("exit", StringComparison.OrdinalIgnoreCase))
@@ -45,7 +52,7 @@ public class DtoCreator
 
             List<string> selectedOptions = SelectDtoOptions();
 
-            string path = Path.Combine(Environment.CurrentDirectory, "Generated");
+            path = Path.Combine(path, "DTOs" ,moduleName, entityName + "Dtos");
             Directory.CreateDirectory(path);
 
             if (selectedOptions.Contains("Dto"))

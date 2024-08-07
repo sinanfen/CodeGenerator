@@ -10,22 +10,29 @@
     {
         while (true)
         {
+            // TODO NULL check
+            Console.Write("Enter the Project Path: ");
+            string path = Console.ReadLine();
+            if (path.EndsWith(".csproj"))
+                path = Path.GetDirectoryName(path);
+
             Console.Write("Enter the Entity name: ");
             string entityName = Console.ReadLine();
 
             Console.Write("Enter the Module name: ");
             string moduleName = Console.ReadLine().ToUpper();
 
+
             string interfaceContent = GenerateInterface(entityName, moduleName);
             string classContent = GenerateClass(entityName, moduleName);
             string mapperContent = GenerateMapper(entityName, moduleName);
 
-            string path = Path.Combine(Environment.CurrentDirectory, "Generated");
-            Directory.CreateDirectory(path);
+            //string path = Path.Combine(Environment.CurrentDirectory, "Generated");
+            //Directory.CreateDirectory(path);
 
-            File.WriteAllText(Path.Combine(path, $"I{entityName}Service.cs"), interfaceContent);
-            File.WriteAllText(Path.Combine(path, $"{entityName}Service.cs"), classContent);
-            File.WriteAllText(Path.Combine(path, $"{entityName}Profile.cs"), mapperContent);
+            File.WriteAllText(Path.Combine(path, "Abstract", moduleName, $"I{entityName}Service.cs"), interfaceContent);
+            File.WriteAllText(Path.Combine(path, "Concrete", moduleName, $"{entityName}Service.cs"), classContent);
+            File.WriteAllText(Path.Combine(path, "AutoMapper", "Profiles", moduleName, $"{entityName}Profile.cs"), mapperContent);
 
             Console.WriteLine($"Files generated successfully in {path}");
             Console.WriteLine("---------------------------------------------");
