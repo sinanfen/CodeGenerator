@@ -205,15 +205,15 @@ public partial class InterfaceImplementationForm : Form
 
         // Generate the interface
         string interfaceContent = GenerateInterface(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, $"I{entityName}Service.cs"), interfaceContent);
+        File.WriteAllText(Path.Combine(path, "Abstract", moduleName, $"I{entityName}Service.cs"), interfaceContent);
 
         // Generate the class
         string classContent = GenerateClass(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, $"{entityName}Service.cs"), classContent);
+        File.WriteAllText(Path.Combine(path, "Concrete", moduleName, $"{entityName}Service.cs"), classContent);
 
         // Generate the AutoMapper profile
         string mapperContent = GenerateMapper(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, $"{entityName}Profile.cs"), mapperContent);
+        File.WriteAllText(Path.Combine(path, "AutoMapper", "Profiles", moduleName, $"{entityName}Profile.cs"), mapperContent);
     }
 
     // CamelCase converter

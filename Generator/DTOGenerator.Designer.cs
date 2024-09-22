@@ -313,7 +313,7 @@ partial class DTOGenerator
     private string GenerateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace Project.Sample.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}Dto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");
@@ -331,7 +331,7 @@ partial class DTOGenerator
     private string GenerateAddDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace Project.Sample.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}AddDto");
         sb.AppendLine("{");
 
@@ -351,7 +351,7 @@ partial class DTOGenerator
     private string GenerateUpdateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace Project.Sample.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
         sb.AppendLine($"public class {entityName}UpdateDto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");
