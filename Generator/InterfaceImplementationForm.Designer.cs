@@ -197,24 +197,49 @@ public partial class InterfaceImplementationForm : Form
 
     private void GenerateFiles(string path, string entityName, string moduleName)
     {
-        // Ensure directory exists
+        // Ensure the root directory exists
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
         }
 
-        // Generate the interface
+        //I[Entity]Service
+        string abstractPath = Path.Combine(path, "Abstract", moduleName);
+        if (!Directory.Exists(abstractPath))
+        {
+            Directory.CreateDirectory(abstractPath);
+        }
         string interfaceContent = GenerateInterface(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, "Abstract", moduleName, $"I{entityName}Service.cs"), interfaceContent);
+        File.WriteAllText(Path.Combine(abstractPath, $"I{entityName}Service.cs"), interfaceContent);
 
-        // Generate the class
-        string classContent = GenerateClass(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, "Concrete", moduleName, $"{entityName}Service.cs"), classContent);
+        //[Entity]Service
+        string concretePath = Path.Combine(path, "Concrete", moduleName);
+        if (!Directory.Exists(concretePath))
+        {
+            Directory.CreateDirectory(concretePath);
+        }
+        string classContent = GenerateImplementation(entityName, moduleName);
+        File.WriteAllText(Path.Combine(concretePath, $"{entityName}Service.cs"), classContent);
 
-        // Generate the AutoMapper profile
+        //[Entity]Dto
+        string profilesPath = Path.Combine(path, "AutoMapper", "Profiles", moduleName);
+        if (!Directory.Exists(profilesPath))
+        {
+            Directory.CreateDirectory(profilesPath);
+        }
         string mapperContent = GenerateMapper(entityName, moduleName);
-        File.WriteAllText(Path.Combine(path, "AutoMapper", "Profiles", moduleName, $"{entityName}Profile.cs"), mapperContent);
+        File.WriteAllText(Path.Combine(profilesPath, $"{entityName}Profile.cs"), mapperContent);
+
+        //I[Entity]Repository
+        string repositoryInterfacePath = Path.Combine(path, "Repositories", moduleName);
+        if (!Directory.Exists(repositoryInterfacePath))
+        {
+            Directory.CreateDirectory(repositoryInterfacePath);
+        }
+        string repositoryInterfaceContent = GenerateRepository(path, entityName, moduleName);
+        File.WriteAllText(Path.Combine(repositoryInterfacePath, $"I{entityName}Repository.cs"), repositoryInterfaceContent);
     }
+
 
     // CamelCase converter
     public static string ToCamelCase(string str)
@@ -237,8 +262,8 @@ public partial class InterfaceImplementationForm : Form
             using MODISO.CORE.Utilities.Results.Abstract;
             using System.Linq.Expressions;
 
-            namespace MODISO.BLL.Abstract.{moduleName}
-            {{
+            namespace MODISO.BLL.Abstract.{moduleName};
+            
                 public interface I{entityName}Service
                 {{
                     Task<{entityName}Dto?> GetAsync(
@@ -265,180 +290,180 @@ public partial class InterfaceImplementationForm : Form
                     Task<IDataResult<{entityName}Dto>> UpdateAsync({entityName}UpdateDto {camelCaseEntityName}UpdateDto, CancellationToken cancellationToken);
                     Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken);
                 }}
-            }}";
+            ";
     }
 
     // Generate Class
-    static string GenerateClass(string entityName, string moduleName)
+    static string GenerateImplementation(string entityName, string moduleName)
     {
         var camelCaseEntityName = ToCamelCase(entityName);
         return $@"
-using AutoMapper;
-using Microsoft.EntityFrameworkCore.Query;
-using Microsoft.Extensions.Logging;
-using MODISO.CORE.Utilities.Results.Abstract;
-using MODISO.BLL.Abstract.{moduleName};
-using MODISO.BLL.Repositories.{moduleName};
-using MODISO.CORE.Utilities.Results.ComplexTypes;
-using MODISO.CORE.Utilities.Results.Concrete;
-using NArchitecture.Core.Persistence.Paging;
-using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-using MODISO.DOMAIN.Entities.{moduleName};
-using System.Linq.Expressions;
-using FluentValidation;
+        using AutoMapper;
+        using Microsoft.EntityFrameworkCore.Query;
+        using Microsoft.Extensions.Logging;
+        using MODISO.CORE.Utilities.Results.Abstract;
+        using MODISO.BLL.Abstract.{moduleName};
+        using MODISO.BLL.Repositories.{moduleName};
+        using MODISO.CORE.Utilities.Results.ComplexTypes;
+        using MODISO.CORE.Utilities.Results.Concrete;
+        using NArchitecture.Core.Persistence.Paging;
+        using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+        using MODISO.DOMAIN.Entities.{moduleName};
+        using System.Linq.Expressions;
+        using FluentValidation;
 
-namespace MODISO.BLL.Concrete.{moduleName}
-{{
-    public class {entityName}Service : I{entityName}Service
-    {{
-        private readonly I{entityName}Repository _{camelCaseEntityName}Repository;
-        private readonly IMapper _mapper;
-        private readonly ILogger<{entityName}Service> _logger;
+        namespace MODISO.BLL.Concrete.{moduleName};
 
-        public {entityName}Service(I{entityName}Repository {camelCaseEntityName}Repository, IMapper mapper, ILogger<{entityName}Service> logger)
-        {{
-            _{camelCaseEntityName}Repository = {camelCaseEntityName}Repository;
-            _mapper = mapper;
-            _logger = logger;
-        }}
+            public class {entityName}Service : I{entityName}Service
+            {{
+                private readonly I{entityName}Repository _{camelCaseEntityName}Repository;
+                private readonly IMapper _mapper;
+                private readonly ILogger<{entityName}Service> _logger;
 
-        public async Task<{entityName}Dto?> GetAsync(
-            Expression<Func<{entityName}, bool>> predicate,
-            Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
-            bool withDeleted = false,
-            bool enableTracking = true,
-            CancellationToken cancellationToken = default)
-        {{
-            try
-            {{
-                var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(predicate, include, withDeleted, enableTracking, cancellationToken);
-                return _mapper.Map<{entityName}Dto>({camelCaseEntityName});
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName}. Predicate: {{Predicate}}. Details: {{ExceptionMessage}}"", nameof(GetAsync), predicate, ex.Message);
-                return null;
-            }}
-        }}
+                public {entityName}Service(I{entityName}Repository {camelCaseEntityName}Repository, IMapper mapper, ILogger<{entityName}Service> logger)
+                {{
+                    _{camelCaseEntityName}Repository = {camelCaseEntityName}Repository;
+                    _mapper = mapper;
+                    _logger = logger;
+                }}
 
-        public async Task<Paginate<{entityName}Dto>?> GetListAsync(
-            Expression<Func<{entityName}, bool>>? predicate = null,
-            Func<IQueryable<{entityName}>, IOrderedQueryable<{entityName}>>? orderBy = null,
-            Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
-            int index = 0,
-            int size = 10,
-            bool withDeleted = false,
-            bool enableTracking = true,
-            CancellationToken cancellationToken = default)
-        {{
-            try
-            {{
-                var {camelCaseEntityName}List = await _{camelCaseEntityName}Repository.GetListAsync(predicate, orderBy, include, index, size, withDeleted, enableTracking, cancellationToken);
-                return _mapper.Map<Paginate<{entityName}Dto>>({camelCaseEntityName}List);
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve list of {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetListAsync), index, size, ex.Message);
-                return null;
-            }}
-        }}
+                public async Task<{entityName}Dto?> GetAsync(
+                    Expression<Func<{entityName}, bool>> predicate,
+                    Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
+                    bool withDeleted = false,
+                    bool enableTracking = true,
+                    CancellationToken cancellationToken = default)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(predicate, include, withDeleted, enableTracking, cancellationToken);
+                        return _mapper.Map<{entityName}Dto>({camelCaseEntityName});
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName}. Predicate: {{Predicate}}. Details: {{ExceptionMessage}}"", nameof(GetAsync), predicate, ex.Message);
+                        return null;
+                    }}
+                }}
 
-        public async Task<{entityName}Dto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
-        {{
-            try
-            {{
-                var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
-                return _mapper.Map<{entityName}Dto>({camelCaseEntityName});
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName} by ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(GetByIdAsync), id, ex.Message);
-                return null;
-            }}
-        }}
+                public async Task<Paginate<{entityName}Dto>?> GetListAsync(
+                    Expression<Func<{entityName}, bool>>? predicate = null,
+                    Func<IQueryable<{entityName}>, IOrderedQueryable<{entityName}>>? orderBy = null,
+                    Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
+                    int index = 0,
+                    int size = 10,
+                    bool withDeleted = false,
+                    bool enableTracking = true,
+                    CancellationToken cancellationToken = default)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName}List = await _{camelCaseEntityName}Repository.GetListAsync(predicate, orderBy, include, index, size, withDeleted, enableTracking, cancellationToken);
+                        return _mapper.Map<Paginate<{entityName}Dto>>({camelCaseEntityName}List);
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve list of {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetListAsync), index, size, ex.Message);
+                        return null;
+                    }}
+                }}
 
-        public async Task<IList<{entityName}Dto>> GetAllAsync(CancellationToken cancellationToken, int index = 0, int size = int.MaxValue)
-        {{
-            try
-            {{
-                var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(index: index, size: size, cancellationToken: cancellationToken);
-                return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), index, size, ex.Message);
-                return null;
-            }}
-        }}
+                public async Task<{entityName}Dto> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
+                        return _mapper.Map<{entityName}Dto>({camelCaseEntityName});
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName} by ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(GetByIdAsync), id, ex.Message);
+                        return null;
+                    }}
+                }}
 
-        public async Task<IList<{entityName}Dto>> GetAllAsync(
-            Expression<Func<{entityName}, bool>> predicate,
-            Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
-            bool withDeleted = false,
-            bool enableTracking = true,
-            CancellationToken cancellationToken = default)
-        {{
-            try
-            {{
-                var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(predicate: predicate, include: include, withDeleted: withDeleted, enableTracking: enableTracking, cancellationToken: cancellationToken);
-                return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s with predicate. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), ex.Message);
-                return null;
-            }}
-        }}
+                public async Task<IList<{entityName}Dto>> GetAllAsync(CancellationToken cancellationToken, int index = 0, int size = int.MaxValue)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(index: index, size: size, cancellationToken: cancellationToken);
+                        return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), index, size, ex.Message);
+                        return null;
+                    }}
+                }}
 
-        public async Task<IDataResult<{entityName}Dto>> AddAsync({entityName}AddDto {camelCaseEntityName}AddDto, CancellationToken cancellationToken)
-        {{
-            try
-            {{
-                var {camelCaseEntityName} = _mapper.Map<{entityName}>({camelCaseEntityName}AddDto);
-                await _{camelCaseEntityName}Repository.AddAsync({camelCaseEntityName});
-                var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
-                return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been added successfully."", resultData);
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to add {entityName}. Details: {{ExceptionMessage}}"", nameof(AddAsync), ex.Message);
-                return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
-            }}
-        }}
+                public async Task<IList<{entityName}Dto>> GetAllAsync(
+                    Expression<Func<{entityName}, bool>> predicate,
+                    Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
+                    bool withDeleted = false,
+                    bool enableTracking = true,
+                    CancellationToken cancellationToken = default)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(predicate: predicate, include: include, withDeleted: withDeleted, enableTracking: enableTracking, cancellationToken: cancellationToken);
+                        return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s with predicate. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), ex.Message);
+                        return null;
+                    }}
+                }}
 
-        public async Task<IDataResult<{entityName}Dto>> UpdateAsync({entityName}UpdateDto {camelCaseEntityName}UpdateDto, CancellationToken cancellationToken)
-        {{
-            try
-            {{
-                var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == {camelCaseEntityName}UpdateDto.Id, cancellationToken: cancellationToken);
-                {camelCaseEntityName} = _mapper.Map({camelCaseEntityName}UpdateDto, {camelCaseEntityName});
-                await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName});
-                var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
-                return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been updated successfully."", resultData);
-            }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to update {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(UpdateAsync), {camelCaseEntityName}UpdateDto?.Id, ex.Message);
-                return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
-            }}
-        }}
+                public async Task<IDataResult<{entityName}Dto>> AddAsync({entityName}AddDto {camelCaseEntityName}AddDto, CancellationToken cancellationToken)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName} = _mapper.Map<{entityName}>({camelCaseEntityName}AddDto);
+                        await _{camelCaseEntityName}Repository.AddAsync({camelCaseEntityName});
+                        var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
+                        return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been added successfully."", resultData);
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to add {entityName}. Details: {{ExceptionMessage}}"", nameof(AddAsync), ex.Message);
+                        return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
+                    }}
+                }}
 
-        public async Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
-        {{
-            try
-            {{
-                var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
-                await _{camelCaseEntityName}Repository.DeleteAsync({camelCaseEntityName}, cancellationToken: cancellationToken);
-                return new Result(ResultStatus.Success, ""The {entityName} has been deleted successfully."");
+                public async Task<IDataResult<{entityName}Dto>> UpdateAsync({entityName}UpdateDto {camelCaseEntityName}UpdateDto, CancellationToken cancellationToken)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == {camelCaseEntityName}UpdateDto.Id, cancellationToken: cancellationToken);
+                        {camelCaseEntityName} = _mapper.Map({camelCaseEntityName}UpdateDto, {camelCaseEntityName});
+                        await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName});
+                        var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
+                        return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been updated successfully."", resultData);
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to update {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(UpdateAsync), {camelCaseEntityName}UpdateDto?.Id, ex.Message);
+                        return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
+                    }}
+                }}
+
+                public async Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
+                {{
+                    try
+                    {{
+                        var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
+                        await _{camelCaseEntityName}Repository.DeleteAsync({camelCaseEntityName}, cancellationToken: cancellationToken);
+                        return new Result(ResultStatus.Success, ""The {entityName} has been deleted successfully."");
+                    }}
+                    catch (Exception ex)
+                    {{
+                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to delete {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(DeleteAsync), id, ex.Message);
+                        return new Result(ResultStatus.Error, ""An unexpected error occurred. Please try again."");
+                    }}
+                }}
             }}
-            catch (Exception ex)
-            {{
-                _logger.LogError(ex, ""Error in {{MethodName}}. Failed to delete {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(DeleteAsync), id, ex.Message);
-                return new Result(ResultStatus.Error, ""An unexpected error occurred. Please try again."");
-            }}
-        }}
-    }}
-}}";
+        ";
     }
 
     // Generate Mapper
@@ -450,8 +475,8 @@ namespace MODISO.BLL.Concrete.{moduleName}
                 using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
                 using MODISO.DOMAIN.Entities.{moduleName};
 
-                namespace MODISO.BLL.AutoMapper.Profiles.{moduleName}
-                {{
+                namespace MODISO.BLL.AutoMapper.Profiles.{moduleName};
+                
                     public class {entityName}Profile : Profile
                     {{
                         public {entityName}Profile()
@@ -463,6 +488,22 @@ namespace MODISO.BLL.Concrete.{moduleName}
                             CreateMap<IPaginate<{entityName}>, Paginate<{entityName}Dto>>();
                         }}
                     }}
-                }}";
+                ";
     }
+
+    private string GenerateRepository(string path, string entityName, string moduleName)
+    {
+        // Generate the interface content
+        return $@"
+        using MODISO.DOMAIN.Entities.{moduleName};
+        using NArchitecture.Core.Persistence.Repositories;
+
+        namespace MODISO.BLL.Repositories.{moduleName};
+        
+            public interface I{entityName}Repository : IAsyncRepository<{entityName}, Guid>, IRepository<{entityName}, Guid>
+            {{
+            }}
+        ";
+    }
+
 }
