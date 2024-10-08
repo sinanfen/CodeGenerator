@@ -278,7 +278,7 @@ public partial class InterfaceImplementationForm : Form
                         Func<IQueryable<{entityName}>, IOrderedQueryable<{entityName}>>? orderBy = null,
                         Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
                         int index = 0,
-                        int size = 10,
+                        int size = int.MaxValue,
                         bool withDeleted = false,
                         bool enableTracking = true,
                         CancellationToken cancellationToken = default
@@ -351,7 +351,7 @@ public partial class InterfaceImplementationForm : Form
                     Func<IQueryable<{entityName}>, IOrderedQueryable<{entityName}>>? orderBy = null,
                     Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
                     int index = 0,
-                    int size = 10,
+                    int size = int.MaxValue,
                     bool withDeleted = false,
                     bool enableTracking = true,
                     CancellationToken cancellationToken = default)
