@@ -342,7 +342,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName}. Predicate: {{Predicate}}. Details: {{ExceptionMessage}}"", nameof(GetAsync), predicate, ex.Message);
-                        return null;
+                        throw;
                     }}
                 }}
 
@@ -364,7 +364,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve list of {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetListAsync), index, size, ex.Message);
-                        return null;
+                        throw;
                     }}
                 }}
 
@@ -378,7 +378,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve {entityName} by ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(GetByIdAsync), id, ex.Message);
-                        return null;
+                        throw;
                     }}
                 }}
 
@@ -392,7 +392,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s. Index: {{Index}}, Size: {{Size}}. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), index, size, ex.Message);
-                        return null;
+                        throw;
                     }}
                 }}
 
@@ -411,7 +411,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s with predicate. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), ex.Message);
-                        return null;
+                        throw;
                     }}
                 }}
 
