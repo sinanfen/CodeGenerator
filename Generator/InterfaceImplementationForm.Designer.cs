@@ -247,6 +247,10 @@ public partial class InterfaceImplementationForm : Form
         if (string.IsNullOrEmpty(str) || str.Length < 2)
             return str.ToLower();
 
+        // İlk harf 'I' ise küçük 'i' yap
+        if (str[0] == 'I')
+            return 'i' + str.Substring(1);
+
         return char.ToLower(str[0]) + str.Substring(1);
     }
 
@@ -420,7 +424,7 @@ public partial class InterfaceImplementationForm : Form
                     try
                     {{
                         var {camelCaseEntityName} = _mapper.Map<{entityName}>({camelCaseEntityName}AddDto);
-                        await _{camelCaseEntityName}Repository.AddAsync({camelCaseEntityName});
+                        await _{camelCaseEntityName}Repository.AddAsync({camelCaseEntityName}, cancellationToken);
                         var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
                         return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been added successfully."", resultData);
                     }}
@@ -437,7 +441,7 @@ public partial class InterfaceImplementationForm : Form
                     {{
                         var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == {camelCaseEntityName}UpdateDto.Id, cancellationToken: cancellationToken);
                         {camelCaseEntityName} = _mapper.Map({camelCaseEntityName}UpdateDto, {camelCaseEntityName});
-                        await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName});
+                        await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName}, cancellationToken);
                         var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
                         return new DataResult<{entityName}Dto>(ResultStatus.Success, ""The {entityName} has been updated successfully."", resultData);
                     }}
