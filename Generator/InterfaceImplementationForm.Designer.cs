@@ -289,7 +289,7 @@ public partial class InterfaceImplementationForm : Form
                     );
                     Task<{entityName}Dto> GetByIdAsync(Guid id, CancellationToken cancellationToken);
                     Task<IList<{entityName}Dto>> GetAllAsync(CancellationToken cancellationToken, int index = 0, int size = int.MaxValue);
-                    Task<IList<{entityName}Dto>> GetAllAsync(Expression<Func<{entityName}, bool>> predicate, Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null, bool withDeleted = false, bool enableTracking = true, CancellationToken cancellationToken = default);            
+                    Task<IList<{entityName}Dto>> GetAllAsync(Expression<Func<{entityName}, bool>> predicate, Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null, int index = 0, int size = int.MaxValue, bool withDeleted = false, bool enableTracking = true, CancellationToken cancellationToken = default);
                     Task<IDataResult<{entityName}Dto>> AddAsync({entityName}AddDto {camelCaseEntityName}AddDto, CancellationToken cancellationToken);
                     Task<IDataResult<{entityName}Dto>> UpdateAsync({entityName}UpdateDto {camelCaseEntityName}UpdateDto, CancellationToken cancellationToken);
                     Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken);
@@ -401,23 +401,23 @@ public partial class InterfaceImplementationForm : Form
                 }}
 
                 public async Task<IList<{entityName}Dto>> GetAllAsync(
-                    Expression<Func<{entityName}, bool>> predicate,
-                    Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null,
-                    bool withDeleted = false,
-                    bool enableTracking = true,
-                    CancellationToken cancellationToken = default)
-                {{
-                    try
-                    {{
-                        var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(predicate: predicate, include: include, withDeleted: withDeleted, enableTracking: enableTracking, cancellationToken: cancellationToken);
-                        return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
-                    }}
-                    catch (Exception ex)
-                    {{
-                        _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s with predicate. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), ex.Message);
-                        throw;
-                    }}
-                }}
+                     Expression<Func<{entityName}, bool>> predicate,
+                     Func<IQueryable<{entityName}>, IIncludableQueryable<{entityName}, object>>? include = null, int index = 0, int size = int.MaxValue,
+                     bool withDeleted = false,
+                     bool enableTracking = true,
+                     CancellationToken cancellationToken = default)
+                 {{
+                     try
+                     {{
+                         var {camelCaseEntityName}s = await _{camelCaseEntityName}Repository.GetListAsync(predicate: predicate, include: include, index: index, size: size, withDeleted: withDeleted, enableTracking: enableTracking, cancellationToken: cancellationToken);
+                         return _mapper.Map<List<{entityName}Dto>>({camelCaseEntityName}s.Items);
+                     }}
+                     catch (Exception ex)
+                     {{
+                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to retrieve all {entityName}s with predicate. Details: {{ExceptionMessage}}"", nameof(GetAllAsync), ex.Message);
+                         throw;
+                     }}
+                 }}
 
                 public async Task<IDataResult<{entityName}Dto>> AddAsync({entityName}AddDto {camelCaseEntityName}AddDto, CancellationToken cancellationToken)
                 {{
