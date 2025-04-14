@@ -82,8 +82,9 @@ public class DtoCreator
     static string GenerateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}Dto");
+        sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"namespace ERP.DOMAIN.DTOs.Base;");
+        sb.AppendLine($"public sealed class {entityName}Dto : BaseDto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");
 
@@ -99,8 +100,8 @@ public class DtoCreator
     static string GenerateAddDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}AddDto");
+        sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"public sealed class {entityName}AddDto");
         sb.AppendLine("{");
 
         foreach (var prop in properties)
@@ -118,8 +119,8 @@ public class DtoCreator
     static string GenerateUpdateDto(string entityName, string moduleName, List<(string Type, string Name)> properties)
     {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine($"namespace MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}UpdateDto");
+        sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
+        sb.AppendLine($"public sealed class {entityName}UpdateDto : BaseUpdateDto");
         sb.AppendLine("{");
         sb.AppendLine("    public Guid Id { get; set; }");
 

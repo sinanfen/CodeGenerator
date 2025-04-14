@@ -45,13 +45,13 @@
         var camelCaseEntityName = ToCamelCase(entityName);
         return $@"
     using Microsoft.EntityFrameworkCore.Query;     
-    using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-    using MODISO.DOMAIN.Entities.{moduleName};
+    using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+    using ERP.DOMAIN.Entities.{moduleName};
     using NArchitecture.Core.Persistence.Paging;
-    using MODISO.CORE.Utilities.Results.Abstract;
+    using ERP.CORE.Utilities.Results.Abstract;
     using System.Linq.Expressions;
     
-    namespace MODISO.BLL.Abstract.{moduleName}
+    namespace ERP.BLL.Abstract.{moduleName}
     {{
         public interface I{entityName}Service
         {{
@@ -90,18 +90,18 @@
     using AutoMapper;
     using Microsoft.EntityFrameworkCore.Query;   
     using Microsoft.Extensions.Logging;
-    using MODISO.CORE.Utilities.Results.Abstract;
-    using MODISO.BLL.Abstract.{moduleName};
-    using MODISO.BLL.Repositories.{moduleName};
-    using MODISO.CORE.Utilities.Results.ComplexTypes;
-    using MODISO.CORE.Utilities.Results.Concrete;
+    using ERP.CORE.Utilities.Results.Abstract;
+    using ERP.BLL.Abstract.{moduleName};
+    using ERP.BLL.Repositories.{moduleName};
+    using ERP.CORE.Utilities.Results.ComplexTypes;
+    using ERP.CORE.Utilities.Results.Concrete;
     using NArchitecture.Core.Persistence.Paging;
-    using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-    using MODISO.DOMAIN.Entities.{moduleName};
+    using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+    using ERP.DOMAIN.Entities.{moduleName};
     using System.Linq.Expressions;
     using FluentValidation;
 
-    namespace MODISO.BLL.Concrete.{moduleName}
+    namespace ERP.BLL.Concrete.{moduleName}
     {{
         public class {entityName}Service : I{entityName}Service
         {{
@@ -277,10 +277,10 @@
         return $@"
         using AutoMapper;    
         using NArchitecture.Core.Persistence.Paging;
-        using MODISO.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-        using MODISO.DOMAIN.Entities.{moduleName};
+        using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+        using ERP.DOMAIN.Entities.{moduleName};
 
-        namespace MODISO.BLL.AutoMapper.Profiles.{moduleName};
+        namespace ERP.BLL.AutoMapper.Profiles.{moduleName};
 
         public class {entityName}Profile : Profile
         {{
