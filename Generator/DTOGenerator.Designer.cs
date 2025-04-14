@@ -314,9 +314,8 @@ partial class DTOGenerator
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}Dto");
+        sb.AppendLine($"public sealed class {entityName}Dto : BaseDto");
         sb.AppendLine("{");
-        sb.AppendLine("    public Guid Id { get; set; }");
 
         foreach (var prop in properties)
         {
@@ -332,7 +331,7 @@ partial class DTOGenerator
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}AddDto");
+        sb.AppendLine($"public sealed class {entityName}AddDto");
         sb.AppendLine("{");
 
         foreach (var prop in properties)
@@ -352,9 +351,8 @@ partial class DTOGenerator
     {
         StringBuilder sb = new StringBuilder();
         sb.AppendLine($"namespace ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;");
-        sb.AppendLine($"public class {entityName}UpdateDto");
+        sb.AppendLine($"public sealed class {entityName}UpdateDto : BaseUpdateDto");
         sb.AppendLine("{");
-        sb.AppendLine("    public Guid Id { get; set; }");
 
         foreach (var prop in properties)
         {
