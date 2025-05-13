@@ -441,7 +441,7 @@ public partial class InterfaceImplementationForm : Form
                     {{
                         var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == {camelCaseEntityName}UpdateDto.Id, cancellationToken: cancellationToken);
                         if({camelCaseEntityName} is null)
-                            return new DataResult<{entityName}Dto>(ResultStatus.Warning, ""The {entityName} could not be found"",null);                        
+                            return new DataResult<{entityName}Dto>(ResultStatus.Warning, ""The {entityName} could not be found"", default!);                        
                         {camelCaseEntityName} = _mapper.Map({camelCaseEntityName}UpdateDto, {camelCaseEntityName});
                         await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName}, cancellationToken);
                         var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
