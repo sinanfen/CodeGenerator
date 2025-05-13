@@ -431,7 +431,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to add {entityName}. Details: {{ExceptionMessage}}"", nameof(AddAsync), ex.Message);
-                        return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
+                        throw;
                     }}
                 }}
 
@@ -440,6 +440,8 @@ public partial class InterfaceImplementationForm : Form
                     try
                     {{
                         var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == {camelCaseEntityName}UpdateDto.Id, cancellationToken: cancellationToken);
+                        if({camelCaseEntityName} is null)
+                            return new DataResult<{entityName}Dto>(ResultStatus.Warning, ""The {entityName} could not be found"",null);                        
                         {camelCaseEntityName} = _mapper.Map({camelCaseEntityName}UpdateDto, {camelCaseEntityName});
                         await _{camelCaseEntityName}Repository.UpdateAsync({camelCaseEntityName}, cancellationToken);
                         var resultData = _mapper.Map<{entityName}Dto>({camelCaseEntityName});
@@ -448,7 +450,7 @@ public partial class InterfaceImplementationForm : Form
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to update {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(UpdateAsync), {camelCaseEntityName}UpdateDto?.Id, ex.Message);
-                        return new DataResult<{entityName}Dto>(ResultStatus.Error, ""An unexpected error occurred. Please try again."", null);
+                        throw;
                     }}
                 }}
 
@@ -457,13 +459,15 @@ public partial class InterfaceImplementationForm : Form
                     try
                     {{
                         var {camelCaseEntityName} = await _{camelCaseEntityName}Repository.GetAsync(x => x.Id == id, cancellationToken: cancellationToken);
+                        if({camelCaseEntityName} is null)
+                            return new Result(ResultStatus.Warning, ""The {entityName} could not be found"");
                         await _{camelCaseEntityName}Repository.DeleteAsync({camelCaseEntityName}, cancellationToken: cancellationToken);
                         return new Result(ResultStatus.Success, ""The {entityName} has been deleted successfully."");
                     }}
                     catch (Exception ex)
                     {{
                         _logger.LogError(ex, ""Error in {{MethodName}}. Failed to delete {entityName} with ID {{Id}}. Details: {{ExceptionMessage}}"", nameof(DeleteAsync), id, ex.Message);
-                        return new Result(ResultStatus.Error, ""An unexpected error occurred. Please try again."");
+                        throw;
                     }}
                 }}
             }}
