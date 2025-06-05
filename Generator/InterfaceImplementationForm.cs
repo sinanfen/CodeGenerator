@@ -54,6 +54,8 @@
                     textBox.Text = "Enter Entity Name";
                 else if (textBox == txtModuleName)
                     textBox.Text = "Enter Module Short Name";
+                else if (textBox == txtNamespace)
+                    textBox.Text = "Enter Namespace";
             }
         }
 
@@ -77,20 +79,22 @@
             string path = txtPath.Text;
             string entityName = txtEntityName.Text;
             string moduleName = txtModuleName.Text.ToUpper();
+            string namespaceName = txtNamespace.Text;
 
             // Validate inputs
-            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(entityName) || string.IsNullOrWhiteSpace(moduleName))
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(entityName) 
+                || string.IsNullOrWhiteSpace(moduleName) || string.IsNullOrEmpty(namespaceName))
             {
                 MessageBox.Show("Please fill in all fields.");
                 return;
             }
 
             // Generate files
-            GenerateFiles(path, entityName, moduleName);
+            GenerateFiles(path, entityName, moduleName, namespaceName);
             MessageBox.Show("Files generated successfully.");
         }
 
-        private void GenerateFiles(string path, string entityName, string moduleName)
+        private void GenerateFiles(string path, string entityName, string moduleName, string namespaceName)
         {
             // Ensure the root directory exists
             if (!Directory.Exists(path))
@@ -104,7 +108,7 @@
             {
                 Directory.CreateDirectory(abstractPath);
             }
-            string interfaceContent = GenerateInterface(entityName, moduleName);
+            string interfaceContent = GenerateInterface(entityName, moduleName, namespaceName);
             File.WriteAllText(Path.Combine(abstractPath, $"I{entityName}Service.cs"), interfaceContent);
 
             //[Entity]Service
@@ -113,7 +117,7 @@
             {
                 Directory.CreateDirectory(concretePath);
             }
-            string classContent = GenerateImplementation(entityName, moduleName);
+            string classContent = GenerateImplementation(entityName, moduleName, namespaceName);
             File.WriteAllText(Path.Combine(concretePath, $"{entityName}Service.cs"), classContent);
 
             //[Entity]Dto
@@ -122,7 +126,7 @@
             {
                 Directory.CreateDirectory(profilesPath);
             }
-            string mapperContent = GenerateMapper(entityName, moduleName);
+            string mapperContent = GenerateMapper(entityName, moduleName, namespaceName);
             File.WriteAllText(Path.Combine(profilesPath, $"{entityName}Profile.cs"), mapperContent);
 
             //I[Entity]Repository
@@ -131,7 +135,7 @@
             {
                 Directory.CreateDirectory(repositoryInterfacePath);
             }
-            string repositoryInterfaceContent = GenerateRepository(path, entityName, moduleName);
+            string repositoryInterfaceContent = GenerateRepository(path, entityName, moduleName, namespaceName);
             File.WriteAllText(Path.Combine(repositoryInterfacePath, $"I{entityName}Repository.cs"), repositoryInterfaceContent);
         }
 
@@ -150,17 +154,17 @@
         }
 
         // Generate Interface
-        static string GenerateInterface(string entityName, string moduleName)
+        static string GenerateInterface(string entityName, string moduleName, string namespaceName)
         {
             var camelCaseEntityName = ToCamelCase(entityName);
             return $@"using Microsoft.EntityFrameworkCore.Query;     
-using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-using ERP.DOMAIN.Entities.{moduleName};
+using {namespaceName}.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+using {namespaceName}.DOMAIN.Entities.{moduleName};
 using NArchitecture.Core.Persistence.Paging;
-using ERP.CORE.Utilities.Results.Abstract;
+using {namespaceName}.CORE.Utilities.Results.Abstract;
 using System.Linq.Expressions;
 
-namespace ERP.BLL.Abstract.{moduleName};
+namespace {namespaceName}.BLL.Abstract.{moduleName};
 
 public interface I{entityName}Service
 {{
@@ -192,24 +196,24 @@ public interface I{entityName}Service
         }
 
         // Generate Class
-        static string GenerateImplementation(string entityName, string moduleName)
+        static string GenerateImplementation(string entityName, string moduleName, string namespaceName)
         {
             var camelCaseEntityName = ToCamelCase(entityName);
             return $@"using AutoMapper;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
-using ERP.CORE.Utilities.Results.Abstract;
-using ERP.BLL.Abstract.{moduleName};
-using ERP.BLL.Repositories.{moduleName};
-using ERP.CORE.Utilities.Results.ComplexTypes;
-using ERP.CORE.Utilities.Results.Concrete;
+using {namespaceName}.CORE.Utilities.Results.Abstract;
+using {namespaceName}.BLL.Abstract.{moduleName};
+using {namespaceName}.BLL.Repositories.{moduleName};
+using {namespaceName}.CORE.Utilities.Results.ComplexTypes;
+using {namespaceName}.CORE.Utilities.Results.Concrete;
 using NArchitecture.Core.Persistence.Paging;
-using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-using ERP.DOMAIN.Entities.{moduleName};
+using {namespaceName}.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+using {namespaceName}.DOMAIN.Entities.{moduleName};
 using System.Linq.Expressions;
 using FluentValidation;
 
-namespace ERP.BLL.Concrete.{moduleName};
+namespace {namespaceName}.BLL.Concrete.{moduleName};
 
 public class {entityName}Service : I{entityName}Service
 {{
@@ -368,14 +372,14 @@ public class {entityName}Service : I{entityName}Service
         }
 
         // Generate Mapper
-        static string GenerateMapper(string entityName, string moduleName)
+        static string GenerateMapper(string entityName, string moduleName, string namespaceName)
         {
             return $@"using AutoMapper;    
 using NArchitecture.Core.Persistence.Paging;
-using ERP.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
-using ERP.DOMAIN.Entities.{moduleName};
+using {namespaceName}.DOMAIN.DTOs.{moduleName}.{entityName}Dtos;
+using {namespaceName}.DOMAIN.Entities.{moduleName};
 
-namespace ERP.BLL.AutoMapper.Profiles.{moduleName};
+namespace {namespaceName}.BLL.AutoMapper.Profiles.{moduleName};
 
 public class {entityName}Profile : Profile
 {{
@@ -391,13 +395,13 @@ public class {entityName}Profile : Profile
 ";
         }
 
-        private string GenerateRepository(string path, string entityName, string moduleName)
+        private string GenerateRepository(string path, string entityName, string moduleName, string namespaceName)
         {
             // Generate the interface content
-            return $@"using ERP.DOMAIN.Entities.{moduleName};
+            return $@"using {namespaceName}.DOMAIN.Entities.{moduleName};
 using NArchitecture.Core.Persistence.Repositories;
 
-namespace ERP.BLL.Repositories.{moduleName};
+namespace {namespaceName}.BLL.Repositories.{moduleName};
 
 public interface I{entityName}Repository : IAsyncRepository<{entityName}, Guid>, IRepository<{entityName}, Guid>
 {{

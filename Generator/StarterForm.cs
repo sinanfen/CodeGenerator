@@ -27,4 +27,10 @@ public partial class StarterForm : Form
         InterfaceImplementationForm interfaceForm = new InterfaceImplementationForm();
         interfaceForm.Show();
     }
+
+    private void btnMerge_Click(object sender, EventArgs e)
+    {
+        MergedGenerator mergedGenerator = new MergedGenerator();
+        mergedGenerator.Show();
+    }
 }
