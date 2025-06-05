@@ -7,50 +7,40 @@ namespace Generator
         public DTOGenerator()
         {
             InitializeComponent();
-            InitializePlaceholders();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        // Removes placeholder when user starts typing
+        private void RemovePlaceholder(object sender, EventArgs e)
         {
+            TextBox textBox = sender as TextBox;
 
-        }
-
-        private void InitializePlaceholders()
-        {
-            SetPlaceholder(txtPath, "Project Path");
-            SetPlaceholder(txtEntityName, "Entity Name");
-            SetPlaceholder(txtModuleName, "Module Short Name");
-            SetPlaceholder(txtProperties, "Entity Properties (one per line)");
-        }
-
-        private void SetPlaceholder(TextBox textBox, string placeholder)
-        {
-            textBox.Text = placeholder;
-            textBox.ForeColor = Color.Gray;
-
-            // Event handlers for entering and leaving the text box
-            textBox.Enter += (sender, e) => RemovePlaceholder(textBox, placeholder);
-            textBox.Leave += (sender, e) => RestorePlaceholder(textBox, placeholder);
-        }
-
-        private void RemovePlaceholder(TextBox textBox, string placeholder)
-        {
-            if (textBox.Text == placeholder)
+            if (textBox.ForeColor == Color.Gray)
             {
                 textBox.Text = "";
-                textBox.ForeColor = Color.Black;  // Change text color to normal
+                textBox.ForeColor = Color.Black;
             }
         }
 
-        private void RestorePlaceholder(TextBox textBox, string placeholder)
+        // Adds placeholder when TextBox is empty
+        private void AddPlaceholder(object sender, EventArgs e)
         {
+            TextBox textBox = sender as TextBox;
+
             if (string.IsNullOrWhiteSpace(textBox.Text))
             {
-                textBox.Text = placeholder;
-                textBox.ForeColor = Color.Gray;  // Change text color to gray for placeholder
+                textBox.ForeColor = Color.Gray;
+                if (textBox == txtPath)
+                    textBox.Text = "Project Path";
+                else if (textBox == txtEntityName)
+                    textBox.Text = "Enter Entity Name";
+                else if (textBox == txtModuleName)
+                    textBox.Text = "Enter Module Short Name";
+                else if (textBox == txtNamespace)
+                    textBox.Text = "Enter Namespace";
+                else if (textBox == txtProperties)
+                    textBox.Text = "Entity Properties (one per line)";
             }
         }
-
 
         // Define the btnBrowse_Click event handler
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -66,10 +56,10 @@ namespace Generator
 
         private void btnReset_Click(object sender, EventArgs e)
         {
-            SetPlaceholder(txtPath, "Project Path");
-            SetPlaceholder(txtEntityName, "Entity Name");
-            SetPlaceholder(txtModuleName, "Module Short Name");
-            SetPlaceholder(txtProperties, "Entity Properties (one per line)");
+            txtPath.Text = "Project Path";
+            txtEntityName.Text = "Entity Name";
+            txtModuleName.Text = "Module Short Name";
+            txtProperties.Text = "Entity Properties (one per line)";
             // Uncheck all checkboxes
             chkDto.Checked = false;
             chkAddDto.Checked = false;
