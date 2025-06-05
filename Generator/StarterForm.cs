@@ -1,20 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿namespace Generator;
 
-namespace Generator
+public partial class StarterForm : Form
 {
-    public partial class StarterForm : Form
+    public StarterForm()
     {
-        public StarterForm()
+        InitializeComponent();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && (components != null))
         {
-            InitializeComponent();
+            components.Dispose();
         }
+        base.Dispose(disposing);
+    }
+
+    private void btnDtoGenerator_Click(object sender, EventArgs e)
+    {
+        DTOGenerator dtoGeneratorForm = new DTOGenerator();
+        dtoGeneratorForm.Show();
+    }
+
+    private void btnInterfaceImplementationGenerator_Click(object sender, EventArgs e)
+    {
+        InterfaceImplementationForm interfaceForm = new InterfaceImplementationForm();
+        interfaceForm.Show();
     }
 }
